@@ -1,0 +1,118 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../iron-icons/av-icons.html">
+
+<dom-module id="player-component">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      .media{
+        padding: 0;
+      }
+      .player{
+        display: flex;
+        justify-content: space-around;
+      }
+      paper-icon-button.media {
+      --paper-icon-button-ink-color: var(--paper-orange-500);
+      background-color: var(--paper-light-blue-500);
+      color: white;
+      border-radius: 3px;
+      padding: 2px;
+    }
+    </style>
+    <article class="player">
+            <!-- <h2>Battery [[battery]]! -->
+            <audio id="myAudio">
+                    <source src="/vicio-camilo-septimo-video-oficial.mp3" type="audio/mpeg">
+                    Your browser does not support the audio element.
+            </audio>
+            <!-- <button on-click="playVid" type="button" hidden="[[hiddenButton]]">Play Music</button>
+            <button on-click="pauseVid" type="button" hidden="[[!hiddenButton]]">Pause Music</button><br> -->
+            <paper-icon-button class="media" icon="av:shuffle" title="shuffle"></paper-icon-button> 
+            <paper-icon-button class="media" icon="av:skip-previous" title="previous"></paper-icon-button>
+            <paper-icon-button class="media" icon="av:play-circle-outline" title="play" on-click="playVid" hidden="[[hiddenButton]]"></paper-icon-button>
+            <paper-icon-button class="media" icon="av:pause-circle-outline" title="pause" on-click="pauseVid" hidden="[[!hiddenButton]]"></paper-icon-button>
+            <paper-icon-button class="media" icon="av:skip-next" title="next"></paper-icon-button>  
+            <paper-icon-button class="media" icon="av:repeat" title="repeat"></paper-icon-button>
+    </article>
+  </template>
+
+  <script>
+    /**
+     * `battery-component`
+     * 
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class PlayerComponent extends Polymer.Element {
+      static get is() { return 'player-component'; }
+      static get properties() {
+        return {
+          battery: {
+            type: Number,
+            value: 0
+          },
+          interval:{
+            type:Event
+          },
+          hiddenButton:{
+            type:Boolean,
+            value: false
+          }
+        };
+      }
+        playVid() {
+            const vid = this.$.myAudio;
+            vid.play();
+            this.interval = setInterval(()=>{
+                this.getTime()
+            },1000);
+            this.show();
+            // vid.ontimeupdate = () => (
+            //     console.log(Math.round(vid.currentTime))   
+            // );
+        } 
+
+        pauseVid() { 
+            
+            const vid = this.$.myAudio; 
+            vid.pause(); 
+            clearInterval(this.interval);
+            this.show();
+            this.getTime();
+        }
+
+        getTime(){
+            let newBattery;
+            if (this.hiddenButton) {
+                newBattery = Math.floor((Math.random() * 3)+1);
+            }else{
+                newBattery = 0;
+            }
+            this.set('battery',newBattery)
+                this.dispatchEvent(new CustomEvent('battery-low',{
+                    bubbles:  false,
+                    composed: false,
+                    detail:{
+                        value: newBattery
+                    }
+                }));
+        }
+
+        show(){
+            this.set('hiddenButton',!this.hiddenButton);
+        }
+
+       
+
+    }
+     
+
+    window.customElements.define(PlayerComponent.is, PlayerComponent);
+  </script>
+</dom-module>

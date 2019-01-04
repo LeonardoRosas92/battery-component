@@ -1,0 +1,85 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="./player-component.html">
+<link rel="import" href="./battery-component.html">
+<link rel="import" href="./charger-component.html">
+
+<dom-module id="container-component">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      #container{
+        border: 2pt solid #8e99f3;
+        border-radius: 10px;
+        width: 80%;
+      }
+      .player{
+        margin: auto;
+        width: 50%;
+        padding: 20px;
+      }
+      .album{
+        width: 50%;
+        border-radius: 20px;
+      }
+      .fondo{
+        text-align: center
+      }
+      .charger{
+        width: 30%;
+        margin: auto;
+      }
+    </style>
+    <div id="container">
+      <!-- <h2>Battery Container [[battery]]! -->
+      <header class="icon">
+        <battery-component subtract="[[battery]]" add="[[addBattery]]"></battery-component>
+      </header>
+      <article class="fondo">
+        <img class="album" src="https://images.genius.com/7b6638f8f2644d03fbb6de06833c83ce.1000x1000x1.jpg" alt="vicio">
+      </article>
+      <article class="player">
+        <player-component on-battery-low="_getBattery"></player-componet>
+      </article>
+      <article class="charger">
+        <charger-component on-battery-charger="_getAddBattery"></charger-component>
+      </article>
+    </div>
+  </template>
+
+  <script>
+    /**
+     * `battery-component`
+     * 
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class ContainerComponent extends Polymer.Element {
+      static get is() { return 'container-component'; }
+      static get properties() {
+        return {
+          battery: {
+            type: Number,
+            value: 0
+          },
+          addBattery: {
+            type: Number,
+            value: 0
+          }
+        };
+      }
+      _getBattery(event){
+        this.set('battery',event.detail.value);
+      }
+
+      _getAddBattery(event){
+        this.set('addBattery',event.detail.value);
+      }
+    }
+
+    window.customElements.define(ContainerComponent.is, ContainerComponent);
+  </script>
+</dom-module>

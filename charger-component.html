@@ -1,0 +1,64 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-toggle-button/paper-toggle-button.html">
+
+<dom-module id="charger-component"> 
+    <template>
+        <style>
+            :host{
+                display: inline;
+            }
+        </style>
+        <article>
+                <paper-toggle-button invalid checked="{{disableBattery}}">Charge phone</paper-toggle-button>
+        </article>
+    </template>
+    <script>
+    class ChargerComponent extends Polymer.Element{
+        static get is(){return 'charger-component';}
+        static get properties(){
+            return{
+                addBattery:{
+                    type: Number,
+                    value: 0
+                },
+                interval:{
+                    type:Event
+                },
+                disableBattery:{
+                    type:Boolean,
+                    value: false,
+                    observer: "_chargePhone"
+                }
+            }
+        }
+        _chargePhone(){
+            if (this.disableBattery) {
+                this.interval = setInterval(()=>{
+                this.getTime()
+            },700)
+            } else {
+                clearInterval(this.interval);
+                this.getTime()
+            }
+        }
+
+        getTime(){
+            let adding
+            if (this.disableBattery) {
+                adding = Math.floor((Math.random() * 3)+1);
+            }else{
+                adding = 0;
+            }
+            this.dispatchEvent(new CustomEvent('battery-charger',{
+                    bubbles:  false,
+                    composed: false,
+                    detail:{
+                        value: adding
+                    }
+                }));
+        }
+
+    }
+    window.customElements.define(ChargerComponent.is, ChargerComponent);
+    </script>
+</dom-module>

@@ -1,0 +1,125 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../iron-icons/device-icons.html">
+
+<dom-module id="battery-component">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      article.player{
+          display: flex;
+          justify-content: flex-end;
+          padding: 5px;
+      }
+      h2{
+          margin: 0;
+      }
+      iron-icon{
+        font-size: 5px;
+      }
+      .full {
+        color: #3ADF00;
+      }
+      .medium {
+        color: #FF8000;
+      }
+      .low {
+        color: #FF0000;
+      }
+      .icon{
+        color: #04B4AE
+      }
+
+    </style>
+    <!-- <h2>[[lowBattery]]</h2>     -->
+    <article class="player">
+        <iron-icon class = "icon" icon = "device:access-alarm"></iron-icon>
+        <iron-icon class = "icon" icon = "device:signal-cellular-3-bar"></iron-icon>
+        <iron-icon class = "icon" icon = "device:signal-wifi-3-bar"></iron-icon>
+        <iron-icon class$= "[[levelBattery]]" icon$= "[[source]]"></iron-icon>
+        <h2>[[battery]]%</h2>
+    </article>
+  </template>
+
+  <script>
+    /**
+     * `battery-component`
+     * 
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class BatteryComponent extends Polymer.Element {
+      static get is() { return 'battery-component'; }
+      static get properties() {
+        return {
+          battery: {
+            type: Number,
+            value: 100
+          },
+          subtract: {
+            type: Number,
+            value: 0,
+            observer: "_switchIcon"
+          },
+          add: {
+            type: Number,
+            value: 0,
+            observer: "_switchIcon"
+          },
+          source:{
+              type:String,
+              value: "device:battery-std"
+          },
+          levelBattery:{
+            type:String,
+            value: "full"
+          }
+        };
+      }
+      _switchIcon(){
+        let remainingBattery = this.battery - this.subtract + this.add;
+        console.log(this.battery +' - '+this.subtract +' + '+this.add);
+        
+        if (remainingBattery < 0) {
+            this.set('battery',0)
+        }else if (remainingBattery > 100) {
+            this.set('battery',100)
+        } else {
+            this.set('battery',remainingBattery)
+        }
+        if (this.add > 0) {
+            if (this.battery === 100) {
+                this.set('source','device:battery-charging-full');
+                this.set('levelBattery','full');
+            }if (this.battery <= 99 && this.battery > 60) {
+                this.set('source','device:battery-charging-90');
+                this.set('levelBattery','full');
+            }if (this.battery <= 60 && this.battery > 30) {
+                this.set('source','device:battery-charging-60');
+                this.set('levelBattery','full');
+            }if (this.battery <= 30 && this.battery > 0){
+                this.set('source','device:battery-charging-20');
+                this.set('levelBattery','full');
+            }
+        } else {
+            if (this.battery > 60) {
+                this.set('source','device:battery-std');
+                this.set('levelBattery','full');
+            }if (this.battery <= 60 && this.battery > 30) {
+                this.set('source','device:battery-60');
+                this.set('levelBattery','medium');
+            }if (this.battery <= 30 && this.battery > 0){
+                this.set('source','device:battery-20');
+                this.set('levelBattery','low');
+            }
+        }
+      }
+    }
+
+    
+    window.customElements.define(BatteryComponent.is, BatteryComponent);
+  </script>
+</dom-module>
